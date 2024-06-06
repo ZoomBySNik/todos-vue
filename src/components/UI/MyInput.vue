@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: "my-input",
+  name: 'my-input',
   props: {
     modelValue: [String, Number],
   },

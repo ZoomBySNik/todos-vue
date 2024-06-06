@@ -22,7 +22,6 @@ export default {
     createPost() {
       this.post.id = uuidv4();
       this.post.likes = 0;
-      this.post.dislikes = 0;
       this.$emit("createPost", this.post);
       this.post = {
         name: '',

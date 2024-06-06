@@ -3,7 +3,7 @@
     <div class="post-header"><strong>{{ post.name }}</strong></div>
     <div class="post-body">{{ post.content }}</div>
     <div class="post-bottom">
-      <div>Лайки: <strong>{{ post.likes }}</strong>/Нелайки: <strong>{{ post.dislikes }}</strong></div>
+      <div style="align-self: center">Лайки: <strong>{{ post.likes }}</strong></div>
 
       <div class="post-buttons">
         <my-button @click="$emit('addLike', post)">Лайкнуть</my-button>

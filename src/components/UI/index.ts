@@ -3,5 +3,5 @@ import MyInput from './MyInput.vue'
 
 export default [
     MyButton,
-    MyInput
+    MyInput,
 ]
