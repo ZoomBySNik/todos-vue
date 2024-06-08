@@ -10,11 +10,12 @@ export default {
 
 <style scoped>
 .button {
-  padding: .5rem 1rem;
+  padding: .6rem 1rem;
   border: none;
   border-radius: .5rem;
   background: darkseagreen;
   text-wrap: nowrap;
+  margin: auto;
 }
 
 .button:hover {

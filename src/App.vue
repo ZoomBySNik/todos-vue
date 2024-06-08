@@ -1,16 +1,17 @@
 <template>
   <div class="app">
+    <h1>Главная страница</h1>
     <my-dialog v-model:show="createPostDialogVisible">
       <post-form @createPost="createPost"/>
     </my-dialog>
-    <h1>Главная страница</h1>
     <section class="section" v-if="!isPostsLoading">
       <div class="section-header">
-        <my-select v-model="selectedSort" :options="sortOptions" @change=""></my-select>
+        <my-select v-model="selectedSort" :options="sortOptions"></my-select>
+        <my-input v-model="searchData" placeholder="Поиск среди заметок"/>
         <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
       </div>
       <post-list
-          :posts="sortedPosts"
+          :posts="sortedAndSearchedPosts"
           @removePost="removePost"
           @addLike="addLike"
           @addDislike="addDislike"
@@ -40,7 +41,8 @@ export default {
         {value: 'title', name: 'По заголовку'},
         {value: 'body', name: 'По содержанию'},
         {value: 'likes', name: 'По количеству лайек'}
-      ]
+      ],
+      searchData: '',
     }
   },
   methods: {
@@ -90,6 +92,7 @@ export default {
   computed: {
     sortedPosts() {
       let sortedPosts = [...this.posts];
+
       switch (this.selectedSort) {
         case "title":
           sortedPosts = sortedPosts.sort((a, b) => a.title?.localeCompare(b.title));
@@ -104,6 +107,9 @@ export default {
           break;
       }
       return sortedPosts
+    },
+    sortedAndSearchedPosts(){
+      return this.sortedPosts.filter(p => p.title.includes(this.searchData) | p.body.includes(this.searchData))
     }
   },
 }
