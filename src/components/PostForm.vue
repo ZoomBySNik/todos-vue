@@ -1,8 +1,8 @@
 <template>
   <form class="form" @submit.prevent>
     <h4>Создать пост</h4>
-    <my-input v-model="post.name" placeholder="Название"/>
-    <my-input v-model="post.content" placeholder="Содержание"/>
+    <my-input v-model="post.title" placeholder="Название"/>
+    <my-input v-model="post.body" placeholder="Содержание"/>
     <my-button style="align-self: flex-end" @click="createPost">Создать</my-button>
   </form>
 </template>
@@ -13,8 +13,8 @@ export default {
   data() {
     return {
       post: {
-        name: '',
-        content: ''
+        title: '',
+        body: ''
       },
     }
   },
@@ -24,8 +24,8 @@ export default {
       this.post.likes = 0;
       this.$emit("createPost", this.post);
       this.post = {
-        name: '',
-            content: ''
+        title: '',
+        body: ''
       };
     }
   }

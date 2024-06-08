@@ -1,9 +1,10 @@
 <template>
   <div class="app">
-    <section class="section">
+    <my-dialog v-model:show="createPostDialogVisible">
       <post-form @createPost="createPost"/>
-    </section>
-    <section class="section">
+    </my-dialog>
+    <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
+    <section class="section" v-if="!isPostsLoading">
       <post-list
           :posts="posts"
           @removePost="removePost"
@@ -11,55 +12,32 @@
           @addDislike="addDislike"
       />
     </section>
+    <my-loading v-else></my-loading>
   </div>
 </template>
 
 <script>
 import PostForm from "@/components/PostForm.vue";
 import PostList from '@/components/PostList.vue';
+import axios from "axios";
+
 export default {
   components: {
-    PostList, PostForm
+    MyLoading,
+    PostList,
+    PostForm
   },
   data() {
     return {
-      posts: [
-        {
-          id: 1,
-          name: 'Пост про жизь',
-          content: 'Жизь надо жить чтобы потом не жаловаца',
-          likes: 0,
-        },
-        {
-          id: 2,
-          name: 'Ауф пост',
-          content: 'Работа не волк, работа work',
-          likes: 0,
-        },
-        {
-          id: 3,
-          name: 'Анекдот про медведя',
-          content: 'Искал медь, сгорел медведь',
-          likes: 0,
-        },
-        {
-          id: 4,
-          name: 'Анекдот про медведя 2',
-          content: 'Шёл медведь по лесу, увидел машину, сел в неё и сгорел',
-          likes: 0,
-        },
-        {
-          id: 5,
-          name: 'Анекдот про вовочку',
-          content: 'Урок, учитель говорит придумайте рассказ со словом ананас. Машенька говорит, папа купил домой ананас. Вовочка говорит от нас папа ушёл. Учитель, а где же слово ананас? Вовочка: А на нас ему похуй',
-          likes: 0,
-        },
-      ],
+      posts: [],
+      createPostDialogVisible: false,
+      isPostsLoading: true,
     }
   },
   methods: {
     createPost(post) {
       this.posts.push(post);
+      this.createPostDialogVisible = false;
     },
     removePost(post) {
       this.posts = this.posts.filter(p => p.id !== post.id)
@@ -67,15 +45,36 @@ export default {
     addLike(post) {
       const index = this.posts.findIndex(p => p.id === post.id);
       if (index !== -1) {
-        this.posts[index] = { ...this.posts[index], likes: this.posts[index].likes + 1 };
+        this.posts[index] = {...this.posts[index], likes: this.posts[index].likes + 1};
       }
     },
     addDislike(post) {
       const index = this.posts.findIndex(p => p.id === post.id);
       if (index !== -1) {
-        this.posts[index] = { ...this.posts[index], likes: this.posts[index].likes - 1 };
+        this.posts[index] = {...this.posts[index], likes: this.posts[index].likes - 1};
       }
     },
+    showDialog() {
+      this.createPostDialogVisible = true;
+    },
+    async fetchPosts() {
+      this.isPostsLoading = true;
+      try {
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=15');
+        this.posts = response.data;
+        this.posts.forEach((post) => {
+          post.likes = Math.round(Math.random() * 100);
+        });
+
+      } catch (e) {
+        alert(`Ошибка ${e}`)
+      } finally {
+        this.isPostsLoading = false;
+      }
+    },
+  },
+  mounted() {
+    this.fetchPosts()
   }
 }
 </script>

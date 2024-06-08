@@ -1,7 +1,7 @@
 <template>
   <div class="post">
-    <div class="post-header"><strong>{{ post.name }}</strong></div>
-    <div class="post-body">{{ post.content }}</div>
+    <div class="post-header"><strong>{{ post.title }}</strong></div>
+    <div class="post-body">{{ post.body }}</div>
     <div class="post-bottom">
       <div style="align-self: center">Лайки: <strong>{{ post.likes }}</strong></div>
 
