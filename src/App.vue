@@ -3,10 +3,14 @@
     <my-dialog v-model:show="createPostDialogVisible">
       <post-form @createPost="createPost"/>
     </my-dialog>
-    <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
+    <h1>Главная страница</h1>
     <section class="section" v-if="!isPostsLoading">
+      <div class="section-header">
+        <my-select v-model="selectedSort" :options="sortOptions" @change=""></my-select>
+        <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
+      </div>
       <post-list
-          :posts="posts"
+          :posts="sortedPosts"
           @removePost="removePost"
           @addLike="addLike"
           @addDislike="addDislike"
@@ -23,7 +27,6 @@ import axios from "axios";
 
 export default {
   components: {
-    MyLoading,
     PostList,
     PostForm
   },
@@ -32,6 +35,12 @@ export default {
       posts: [],
       createPostDialogVisible: false,
       isPostsLoading: true,
+      selectedSort: '',
+      sortOptions: [
+        {value: 'title', name: 'По заголовку'},
+        {value: 'body', name: 'По содержанию'},
+        {value: 'likes', name: 'По количеству лайек'}
+      ]
     }
   },
   methods: {
@@ -45,13 +54,15 @@ export default {
     addLike(post) {
       const index = this.posts.findIndex(p => p.id === post.id);
       if (index !== -1) {
-        this.posts[index] = {...this.posts[index], likes: this.posts[index].likes + 1};
+        this.posts[index].likes += 1;
+        this.posts = [...this.posts];
       }
     },
     addDislike(post) {
       const index = this.posts.findIndex(p => p.id === post.id);
       if (index !== -1) {
-        this.posts[index] = {...this.posts[index], likes: this.posts[index].likes - 1};
+        this.posts[index].likes -= 1;
+        this.posts = [...this.posts];
       }
     },
     showDialog() {
@@ -75,9 +86,29 @@ export default {
   },
   mounted() {
     this.fetchPosts()
-  }
+  },
+  computed: {
+    sortedPosts() {
+      let sortedPosts = [...this.posts];
+      switch (this.selectedSort) {
+        case "title":
+          sortedPosts = sortedPosts.sort((a, b) => a.title?.localeCompare(b.title));
+          break;
+        case "body":
+          sortedPosts = sortedPosts.sort((a, b) => a.body?.localeCompare(b.body));
+          break;
+        case "likes":
+          sortedPosts = sortedPosts.sort((a, b) => a.likes - b.likes);
+          break;
+        default:
+          break;
+      }
+      return sortedPosts
+    }
+  },
 }
 </script>
 
 <style scoped>
+
 </style>
