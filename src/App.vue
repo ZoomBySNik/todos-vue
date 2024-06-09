@@ -1,22 +1,25 @@
 <template>
   <div class="app">
-    <h1>Главная страница</h1>
-    <my-dialog v-model:show="createPostDialogVisible">
-      <post-form @createPost="createPost"/>
-    </my-dialog>
-    <section class="section" v-if="!isPostsLoading">
-      <div class="section-header">
-        <my-select v-model="selectedSort" :options="sortOptions"></my-select>
-        <my-input v-model="searchData" placeholder="Поиск среди заметок"/>
-        <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
-      </div>
-      <post-list
-          :posts="sortedAndSearchedPosts"
-          @removePost="removePost"
-          @addLike="addLike"
-          @addDislike="addDislike"
-      />
-    </section>
+    <div class="flex-vertical gap1" v-if="!isPostsLoading">
+      <h1>Главная страница</h1>
+      <my-dialog v-model:show="createPostDialogVisible">
+        <post-form @createPost="createPost"/>
+      </my-dialog>
+      <section class="section">
+        <div class="section-header">
+          <my-select v-model="selectedSort" :options="sortOptions"></my-select>
+          <my-input v-model.trim="searchData" placeholder="Поиск среди заметок"/>
+          <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
+        </div>
+        <post-list
+            :posts="sortedAndSearchedPosts"
+            @removePost="removePost"
+            @addLike="addLike"
+            @addDislike="addDislike"
+        />
+      </section>
+      <div class="flex-horizontal gap05 to-center"><my-button v-for="pageNumber in totalPages" :disabled="pageNumber === this.page" @click="changePage(pageNumber)">{{pageNumber}}</my-button></div>
+    </div>
     <my-loading v-else></my-loading>
   </div>
 </template>
@@ -25,9 +28,11 @@
 import PostForm from "@/components/PostForm.vue";
 import PostList from '@/components/PostList.vue';
 import axios from "axios";
+import MyButton from "@/components/UI/MyButton.vue";
 
 export default {
   components: {
+    MyButton,
     PostList,
     PostForm
   },
@@ -37,12 +42,15 @@ export default {
       createPostDialogVisible: false,
       isPostsLoading: true,
       selectedSort: '',
+      searchData: '',
+      page: 1,
+      limit: 15,
+      totalPages: 0,
       sortOptions: [
         {value: 'title', name: 'По заголовку'},
         {value: 'body', name: 'По содержанию'},
         {value: 'likes', name: 'По количеству лайек'}
       ],
-      searchData: '',
     }
   },
   methods: {
@@ -73,7 +81,13 @@ export default {
     async fetchPosts() {
       this.isPostsLoading = true;
       try {
-        const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=15');
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+          params: {
+            _page: this.page,
+            _limit: this.limit
+          }
+        });
+        this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
         this.posts = response.data;
         this.posts.forEach((post) => {
           post.likes = Math.round(Math.random() * 100);
@@ -84,6 +98,9 @@ export default {
       } finally {
         this.isPostsLoading = false;
       }
+    },
+    changePage(pageNumber) {
+      this.page = pageNumber;
     },
   },
   mounted() {
@@ -108,10 +125,15 @@ export default {
       }
       return sortedPosts
     },
-    sortedAndSearchedPosts(){
-      return this.sortedPosts.filter(p => p.title.includes(this.searchData) | p.body.includes(this.searchData))
+    sortedAndSearchedPosts() {
+      return this.sortedPosts.filter(p => p.title.toLowerCase().includes(this.searchData.toLowerCase()) | p.body.toLowerCase().includes(this.searchData.toLowerCase()))
     }
   },
+  watch: {
+    page() {
+      this.fetchPosts()
+    }
+  }
 }
 </script>
 

@@ -14,11 +14,14 @@ export default {
   border: none;
   border-radius: .5rem;
   background: darkseagreen;
+  margin: auto 0;
   text-wrap: nowrap;
-  margin: auto;
 }
 
 .button:hover {
   background: mediumseagreen;
+}
+.button:disabled:hover {
+  background: darkseagreen;
 }
 </style>

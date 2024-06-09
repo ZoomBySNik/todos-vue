@@ -3,8 +3,10 @@
     <div class="post-header"><strong>{{ post.title }}</strong></div>
     <div class="post-body">{{ post.body }}</div>
     <div class="post-bottom">
-      <div style="align-self: center">Лайки: <strong>{{ post.likes }}</strong></div>
-
+      <div class="to-center flex-horizontal gap05">
+        <p>Лайки: <strong>{{ post.likes }}</strong></p>
+        <p>Id: <strong>{{ post.id }}</strong></p>
+      </div>
       <div class="post-buttons">
         <my-button @click="$emit('addLike', post)">Лайкнуть</my-button>
         <my-button @click="$emit('addDislike', post)">Нелайкнуть</my-button>
