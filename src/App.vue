@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <div class="flex-vertical gap1" v-if="!isPostsLoading">
+    <div class="flex-vertical gap1" v-show="!isPostsLoading">
       <h1>Главная страница</h1>
       <my-dialog v-model:show="createPostDialogVisible">
         <post-form @createPost="createPost"/>
@@ -17,10 +17,15 @@
             @addLike="addLike"
             @addDislike="addDislike"
         />
+        <div ref="observer" class="observer"></div>
       </section>
-      <div class="flex-horizontal gap05 to-center"><my-button v-for="pageNumber in totalPages" :disabled="pageNumber === this.page" @click="changePage(pageNumber)">{{pageNumber}}</my-button></div>
+      <!--<div class="flex-horizontal gap05 to-center">
+        <my-button v-for="pageNumber in totalPages" :disabled="pageNumber === this.page"
+                   @click="changePage(pageNumber)">{{ pageNumber }}
+        </my-button>
+      </div>-->
     </div>
-    <my-loading v-else></my-loading>
+    <my-loading v-show="isPostsLoading"></my-loading>
   </div>
 </template>
 
@@ -99,12 +104,44 @@ export default {
         this.isPostsLoading = false;
       }
     },
-    changePage(pageNumber) {
-      this.page = pageNumber;
+    async fetchMorePosts() {
+      try {
+        this.page += 1;
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+          params: {
+            _page: this.page,
+            _limit: this.limit
+          }
+        });
+        this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+        let postsWithoutLikes = response.data;
+        postsWithoutLikes.forEach((post) => {
+          post.likes = Math.round(Math.random() * 100);
+        });
+        this.posts = [...this.posts, ...postsWithoutLikes];
+
+
+      } catch (e) {
+        alert(`Ошибка ${e}`)
+      }
     },
+    /*changePage(pageNumber) {
+      this.page = pageNumber;
+    },*/
   },
   mounted() {
-    this.fetchPosts()
+    this.fetchPosts();
+    const options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    const callback = (entries) => {
+      if (entries[0].isIntersecting) {
+        this.fetchMorePosts()
+      }
+    };
+    const observer = new IntersectionObserver(callback, options);
+    observer.observe(this.$refs.observer);
   },
   computed: {
     sortedPosts() {
@@ -130,13 +167,14 @@ export default {
     }
   },
   watch: {
-    page() {
+    /*page() {
       this.fetchPosts()
-    }
+    }*/
   }
 }
 </script>
 
 <style scoped>
-
+.observer{
+}
 </style>
