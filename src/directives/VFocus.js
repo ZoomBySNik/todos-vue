@@ -1,6 +1,10 @@
 export default {
     mounted(el){
-        el.focus()
+        if (el.tagName.toLowerCase() === 'input') {
+            el.focus()
+        } else {
+            el.find('input').focus()
+        }
     },
     name: 'focus'
 }

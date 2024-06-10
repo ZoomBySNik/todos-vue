@@ -2,11 +2,12 @@
   <div class="navbar flex-horizontal gap2">
     <div class="logo-container flex-horizontal gap1">
       <div>Тут будет пикча</div>
-      <div class="logo-title"><h1>Заметочки</h1></div>
+      <div class="logo-title"><h1>Просто-постильня</h1></div>
     </div>
     <div class="nav-buttons flex-horizontal gap2">
       <my-button @click="$router.push('/')">Главная</my-button>
       <my-button @click="$router.push('/posts')">Посты</my-button>
+      <my-button @click="$router.push('/posts-store')">Посты store</my-button>
       <my-button @click="$router.push('/about')">О нас</my-button>
     </div>
   </div>
