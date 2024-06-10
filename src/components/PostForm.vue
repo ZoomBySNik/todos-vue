@@ -1,7 +1,7 @@
 <template>
   <form class="form" @submit.prevent>
     <h4>Создать пост</h4>
-    <my-input v-model="post.title" placeholder="Название"/>
+    <my-input v-focus v-model="post.title" placeholder="Название"/>
     <my-input v-model="post.body" placeholder="Содержание"/>
     <my-button style="align-self: flex-end" @click="createPost">Создать</my-button>
   </form>
@@ -9,7 +9,9 @@
 
 <script>
 import {v4 as uuidv4} from "uuid";
+import MyInput from "@/components/UI/MyInput.vue";
 export default {
+  components: {MyInput},
   data() {
     return {
       post: {

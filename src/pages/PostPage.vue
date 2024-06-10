@@ -7,7 +7,7 @@
     <section class="section">
       <div class="section-header">
         <my-select v-model="selectedSort" :options="sortOptions"></my-select>
-        <my-input v-model.trim="searchData" placeholder="Поиск среди заметок"/>
+        <my-input v-focus v-model.trim="searchData" placeholder="Поиск среди заметок"/>
         <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
       </div>
       <post-list
@@ -16,7 +16,7 @@
           @addLike="addLike"
           @addDislike="addDislike"
       />
-      <div ref="observer" class="observer"></div>
+      <div v-intersection="fetchMorePosts" class="observer"></div>
     </section>
     <!--<div class="flex-horizontal gap05 to-center">
       <my-button v-for="pageNumber in totalPages" :disabled="pageNumber === this.page"
@@ -127,17 +127,6 @@ export default {
   },
   mounted() {
     this.fetchPosts();
-    const options = {
-      rootMargin: '0px',
-      threshold: 1.0
-    }
-    const callback = (entries) => {
-      if (entries[0].isIntersecting) {
-        this.fetchMorePosts()
-      }
-    };
-    const observer = new IntersectionObserver(callback, options);
-    observer.observe(this.$refs.observer);
   },
   computed: {
     sortedPosts() {

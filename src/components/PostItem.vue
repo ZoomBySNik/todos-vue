@@ -8,9 +8,12 @@
         <p>Id: <strong>{{ post.id }}</strong></p>
       </div>
       <div class="post-buttons">
-        <my-button @click="$emit('addLike', post)">Лайкнуть</my-button>
-        <my-button @click="$emit('addDislike', post)">Нелайкнуть</my-button>
-        <my-button @click="$emit('removePost', post)" class="reject">Грохнуть нахуй</my-button>
+        <div class="flex-horizontal">
+          <my-button @click="$emit('addLike', post)">Лайк</my-button>
+          <my-button @click="$emit('addDislike', post)">Дизлайк</my-button>
+        </div>
+        <my-button @click="$router.push(`/posts/${post.id}`)">Открыть</my-button>
+        <my-button @click="$emit('removePost', post)" class="reject">Удалить</my-button>
       </div>
     </div>
   </div>
@@ -34,8 +37,8 @@ export default {
 .post {
   display: flex;
   flex-direction: column;
-  flex: 1 1 calc(1 / 3 * 100% - 1rem);
-  max-width: calc(1 / 3 * 100% - 1rem);
+  flex: 1 1 calc(1 / 2 * 100% - 1rem);
+  max-width: calc(1 / 2 * 100% - 1rem);
   padding: 1rem;
   background: #ddd;
   border-radius: 1rem;
