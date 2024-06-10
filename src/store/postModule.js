@@ -13,7 +13,8 @@ export const postModule = {
         sortOptions: [
             {value: 'title', name: 'По заголовку'},
             {value: 'body', name: 'По содержанию'},
-            {value: 'likes', name: 'По количеству лайков'}
+            {value: 'max-to-min-likes', name: 'По количеству лайков (убывание)'},
+            {value: 'min-to-max-likes', name: 'По количеству лайков (возрастание)'}
         ],
     }),
     getters: {
@@ -27,7 +28,10 @@ export const postModule = {
                 case "body":
                     sortedPosts = sortedPosts.sort((a, b) => a.body?.localeCompare(b.body));
                     break;
-                case "likes":
+                case "max-to-min-likes":
+                    sortedPosts = sortedPosts.sort((a, b) => b.likes - a.likes);
+                    break;
+                case "min-to-max-likes":
                     sortedPosts = sortedPosts.sort((a, b) => a.likes - b.likes);
                     break;
                 default:
@@ -77,6 +81,9 @@ export const postModule = {
         },
         resetPage(state){
             state.page = 1;
+        },
+        pushPost(state, post) {
+            state.posts = [...state.posts, post]
         }
     },
     actions: {

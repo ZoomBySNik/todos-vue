@@ -1,14 +1,17 @@
 <template>
   <div class="flex-vertical gap1" v-show="!isPostsLoading">
     <h1>Главная страница</h1>
+    <my-dialog v-model:show="createPostDialogVisible">
+      <post-form @createPost="createPost"/>
+    </my-dialog>
     <section class="section">
       <div class="section-header">
         <my-select :model-value="selectedSort" @update:model-value="setSelectedSort" :options="sortOptions"></my-select>
         <my-input v-focus :model-value="searchData" @update:model-value="setSearchData" placeholder="Поиск среди заметок"/>
+        <my-button @click="showDialog" style="align-self: flex-end">Создать пост</my-button>
       </div>
       <post-list
           :posts="sortedAndSearchedPosts"
-          @removePost="removePost"
           @addLike="incrementLikes"
           @addDislike="decrementLikes"
       />
@@ -29,7 +32,7 @@ export default {
   },
   data() {
     return {
-
+      createPostDialogVisible: false,
     }
   },
   methods: {
@@ -40,35 +43,24 @@ export default {
       incrementLikes: 'post/incrementLikes',
       decrementLikes: 'post/decrementLikes',
       resetPage: 'post/resetPage',
+      postPush: 'post/pushPost'
     }),
     ...mapActions({
       fetchMorePosts: "post/fetchMorePosts",
       fetchPosts: "post/fetchPosts",
-      createPost: "post/createPost",
     }),
-    removePost(post) {
-      this.posts = this.posts.filter(p => p.id !== post.id)
+    showDialog() {
+      this.createPostDialogVisible = true;
     },
-    addLike(post) {
-      const index = this.posts.findIndex(p => p.id === post.id);
-      if (index !== -1) {
-        this.posts[index].likes += 1;
-        this.posts = [...this.posts];
-      }
-    },
-    addDislike(post) {
-      const index = this.posts.findIndex(p => p.id === post.id);
-      if (index !== -1) {
-        this.posts[index].likes -= 1;
-        this.posts = [...this.posts];
-      }
+    createPost(post) {
+      this.postPush(post);
+      this.createPostDialogVisible = false;
     },
   },
   mounted() {
-    this.fetchPosts()
-  },
-  beforeUnmount() {
-    this.resetPage()
+    if (this.posts.length === 0) {
+      this.fetchPosts()
+    }
   },
   computed: {
     ...mapState({

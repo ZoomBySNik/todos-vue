@@ -50,7 +50,8 @@ export default {
       sortOptions: [
         {value: 'title', name: 'По заголовку'},
         {value: 'body', name: 'По содержанию'},
-        {value: 'likes', name: 'По количеству лайек'}
+        {value: 'max-to-min-likes', name: 'По количеству лайков (убывание)'},
+        {value: 'min-to-max-likes', name: 'По количеству лайков (возрастание)'}
       ],
     }
   },
@@ -139,7 +140,10 @@ export default {
         case "body":
           sortedPosts = sortedPosts.sort((a, b) => a.body?.localeCompare(b.body));
           break;
-        case "likes":
+        case "max-to-min-likes":
+          sortedPosts = sortedPosts.sort((a, b) => b.likes - a.likes);
+          break;
+        case "min-to-max-likes":
           sortedPosts = sortedPosts.sort((a, b) => a.likes - b.likes);
           break;
         default:
